@@ -120,7 +120,6 @@ function validateForm() {
 
 function handleNextButton(hasAnswer) {
   console.log(hasAnswer);
-  nextBtn.style.display = hasAnswer ? "block" : "none";
   let radioBtns = document.querySelectorAll('[name="answer"]');
   radioBtns.forEach((btn) => {
     btn.addEventListener("change", (e) => {
@@ -129,6 +128,8 @@ function handleNextButton(hasAnswer) {
       submitBtn.style.display = status ? "block" : "none";
     });
   });
+  nextBtn.style.display = currentQuestion === questions.length - 1 || hasAnswer ? "block" : "none";
+  submitBtn.style.display = currentQuestion === questions.length - 1 && hasAnswer ? "block" : "none";
 }
 
 function loadQues() {
@@ -137,12 +138,12 @@ function loadQues() {
   opt.innerHTML = "";
   for (let i = 0; i < questions[currentQuestion].options.length; i++) {
     let status =
-      !!userAnswers[currentQuestion] && userAnswers[currentQuestion] === i;
+      !!userAnswers[currentQuestion] && userAnswers[currentQuestion] === i + 1;
     optionsStatus.push(status);
     let radioBtnTemplate = `<div>
-    <input type="radio" name="answer" value="${i}" ${status && "checked"}/> 
-    <label >${questions[currentQuestion].options[i]}</label>
-    </div>`;
+      <input type="radio" name="answer" value="${i + 1}" ${status && "checked"}/> 
+      <label>${questions[currentQuestion].options[i]}</label>
+      </div>`;
     opt.insertAdjacentHTML("beforeend", radioBtnTemplate);
   }
   let hasAnswer = optionsStatus.some((s) => s);
@@ -167,6 +168,7 @@ function nextQuestion() {
     currentQuestion++;
     loadQues();
   }
+  nextBtn.style.display = currentQuestion === questions.length - 1 ? "none" : "block";
 }
 
 function checkAns() {
@@ -186,7 +188,7 @@ function submitQuiz() {
     );
     if (
       userAnswers[i] !== null &&
-      questions[i].options[userAnswers[i]] === questions[i].answer
+      questions[i].options[userAnswers[i]-1] === questions[i].answer
     ) {
       score++;
     }
